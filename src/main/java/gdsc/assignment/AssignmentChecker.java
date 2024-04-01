@@ -1,9 +1,15 @@
 package gdsc.assignment;
 
+import static gdsc.assignment.AssignmentStatus.*;
+import static java.net.HttpURLConnection.*;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Stream;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,7 +31,8 @@ public class AssignmentChecker {
 		submissionUrls.forEach(s -> {
 			try {
 				URL url = new URL(s);
-				if (evaluateAssignment(url) == AssignmentStatus.DONE) {
+				if (evaluateAssignment(url) == DONE) {
+					resultGenerator.writeToFile(url.toString());
 					result.addTotalSubmissions();
 				}
 				result.addTotalStudents();
@@ -39,15 +46,26 @@ public class AssignmentChecker {
 	}
 
 	private AssignmentStatus evaluateAssignment(URL url) throws IOException {
-		if (getResponseCode(url) == 200) {
-			resultGenerator.writeToFile(url.toString());
-			return AssignmentStatus.DONE;
+		HttpURLConnection connection = sendRequest(url);
+		if (getResponseCode(connection) == HTTP_NOT_FOUND) {
+			return NOT_DONE;
 		}
-		return AssignmentStatus.NOT_DONE;
+
+		return validateWilLength(connection);
 	}
 
-	private int getResponseCode(URL url) throws IOException {
-		HttpURLConnection connection = sendRequest(url);
+	private AssignmentStatus validateWilLength(HttpURLConnection connection) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		Stream<String> lines = bufferedReader.lines();
+		long wilLength = lines.mapToLong(String::length).sum();
+
+		if (wilLength < 300) {
+			return INSUFFICIENT;
+		}
+		return DONE;
+	}
+
+	private int getResponseCode(HttpURLConnection connection) throws IOException {
 		return connection.getResponseCode();
 	}
 
