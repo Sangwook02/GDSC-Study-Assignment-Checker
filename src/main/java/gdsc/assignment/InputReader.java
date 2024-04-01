@@ -23,6 +23,6 @@ public class InputReader {
 		String wil = Config.getInstance().getWil();
 		return br.lines()
 			.filter(Objects::nonNull)
-			.map(submission -> submission + wil).toList();
+			.map(githubHandle -> String.format(wil, githubHandle)).toList();
 	}
 }
