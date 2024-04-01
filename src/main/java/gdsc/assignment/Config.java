@@ -7,10 +7,12 @@ import lombok.Getter;
 
 @Getter
 public class Config {
-	private String wilFormat;
+	private String wilPrefix;
+	private String wilPostfix;
 	private String inputFilePath;
 	private String outputFilePath;
 	private String wil;
+	private String studyName;
 	private int week;
 	private int numberOfWil;
 
@@ -26,16 +28,18 @@ public class Config {
 		Properties properties = new Properties();
 		properties.load(Main.class.getResourceAsStream("/application.properties"));
 
-		wilFormat = properties.getProperty("wilFormat");
+		wilPrefix = properties.getProperty("wilPrefix");
+		wilPostfix = properties.getProperty("wilPostfix");
 		inputFilePath = properties.getProperty("inputFilePath");
 		outputFilePath = properties.getProperty("outputFilePath");
+		studyName = properties.getProperty("studyName");
 		week = Integer.parseInt(properties.getProperty("week"));
 		numberOfWil = Integer.parseInt(properties.getProperty("numberOfWil"));
-		wil = makeWilPath();
+		wil = wilPrefix + makeWilPostFix();
 	}
 
-	private String makeWilPath() {
-		return String.format(wilFormat, week, numberOfWil);
+	private String makeWilPostFix() {
+		return String.format(wilPostfix,studyName, week, numberOfWil);
 	}
 
 }
