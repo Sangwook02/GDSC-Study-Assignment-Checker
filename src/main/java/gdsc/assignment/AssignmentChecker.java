@@ -25,7 +25,8 @@ public class AssignmentChecker {
 		submissionUrls.forEach(s -> {
 			try {
 				URL url = new URL(s);
-				if (evaluateAssignment(url) == AssignmentStatus.DONE) {
+				if (evaluateAssignment(url) == DONE) {
+					resultGenerator.writeToFile(url.toString());
 					result.addTotalSubmissions();
 				}
 				result.addTotalStudents();
@@ -40,7 +41,6 @@ public class AssignmentChecker {
 
 	private AssignmentStatus evaluateAssignment(URL url) throws IOException {
 		if (getResponseCode(url) == 200) {
-			resultGenerator.writeToFile(url.toString());
 			return AssignmentStatus.DONE;
 		}
 		return AssignmentStatus.NOT_DONE;
