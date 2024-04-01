@@ -53,8 +53,7 @@ public class AssignmentChecker {
 		return DONE;
 	}
 
-	private int getResponseCode(URL url) throws IOException {
-		HttpURLConnection connection = sendRequest(url);
+	private int getResponseCode(HttpURLConnection connection) throws IOException {
 		return connection.getResponseCode();
 	}
 
