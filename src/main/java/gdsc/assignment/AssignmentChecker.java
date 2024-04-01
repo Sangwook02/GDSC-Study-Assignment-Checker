@@ -42,8 +42,15 @@ public class AssignmentChecker {
 	private AssignmentStatus evaluateAssignment(URL url) throws IOException {
 		if (getResponseCode(url) == 200) {
 			return AssignmentStatus.DONE;
+	private AssignmentStatus validateWilLength(HttpURLConnection connection) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		Stream<String> lines = bufferedReader.lines();
+		long wilLength = lines.mapToLong(String::length).sum();
+
+		if (wilLength < 300) {
+			return INSUFFICIENT;
 		}
-		return AssignmentStatus.NOT_DONE;
+		return DONE;
 	}
 
 	private int getResponseCode(URL url) throws IOException {
