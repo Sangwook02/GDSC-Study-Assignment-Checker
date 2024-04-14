@@ -18,10 +18,11 @@ import lombok.AllArgsConstructor;
 public class AssignmentChecker {
 	private InputReader inputReader;
 	private ResultGenerator resultGenerator;
+	private LengthValidator lengthValidator;
 
 
 	public static AssignmentChecker create() throws IOException {
-		return new AssignmentChecker(InputReader.getInstance(), ResultGenerator.getInstance());
+		return new AssignmentChecker(InputReader.getInstance(), ResultGenerator.getInstance(), new Length300Validator());
 	}
 
 	public Result checkAssignment() throws IOException {
@@ -57,12 +58,8 @@ public class AssignmentChecker {
 	private AssignmentStatus validateWilLength(HttpURLConnection connection) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		Stream<String> lines = bufferedReader.lines();
-		long wilLength = lines.mapToLong(String::length).sum();
 
-		if (wilLength < 300) {
-			return INSUFFICIENT;
-		}
-		return DONE;
+		return lengthValidator.validateWilLength(lines);
 	}
 
 	private int getResponseCode(HttpURLConnection connection) throws IOException {
