@@ -1,5 +1,6 @@
 package gdsc.assignment;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Length300Validator implements LengthValidator {
@@ -7,9 +8,9 @@ public class Length300Validator implements LengthValidator {
 
 	@Override
 	public AssignmentStatus validateWilLength(Stream<String> lines) {
-		long wilLength = lines.mapToLong(String::length).sum();
+		String collect = lines.collect(Collectors.joining());
 
-		if (wilLength >= MINIMUM_LENGTH) {
+		if (getWilLength(collect) >= MINIMUM_LENGTH) {
 			return AssignmentStatus.DONE;
 		}
 		return AssignmentStatus.INSUFFICIENT;
